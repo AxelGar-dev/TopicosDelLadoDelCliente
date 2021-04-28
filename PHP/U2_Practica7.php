@@ -18,6 +18,15 @@ if(isset($_POST['btnEnviar'])) {
     if($_POST['datosGuardados'] !== "") {
         $cadenaAUsar = "";
         if(substr($_POST['datosGuardados'], strlen($_POST['datosGuardados']) - 1) == "@") {
+            if($_POST['bandera'] == 1) {
+                $aux = explode("@", $_POST['datosGuardados']);
+                $aux[$_POST['posicion']] = $_POST['nuevoNombre'] . ",". $_POST['nuevaDireccion'];
+                $_POST['datosGuardados'] = "";
+                for($i = 0; $i < count($aux); $i++) {
+                    $_POST['datosGuardados'] .= $aux[$i] . "@";
+                }
+                $_POST['datosGuardados'] = substr($_POST['datosGuardados'], 0, strlen($_POST['datosGuardados']) - 1);
+            }
             $cadenaAUsar = substr($_POST['datosGuardados'], 0, strlen($_POST['datosGuardados']) - 1);
         }
         $datosRetorno =  $_POST['datosGuardados'];
@@ -60,6 +69,7 @@ if(isset($_POST['btnEnviar'])) {
 }
 $modificarDatos = "";
 if(isset($_POST['modificar'])) {
+    $datosRetorno =  $_POST['datosGuardados'];
     $display = "display: none;";
     $datosAGuardar = explode("@", $_POST['datosGuardados']);
     for($i = 0; $i < count($datosAGuardar); $i++) {
@@ -71,14 +81,15 @@ if(isset($_POST['modificar'])) {
                     <input type='hidden' value='$datosRetorno' name='datosGuardados'>
                     <label>
                         Nuevo nombre:
-                        <input type='text' name='nuevoNombre'>
+                        <input type='text' name='nuevoNombre' required>
                     </label>
                     <br>
                     <label>
                         Nueva dirección:
-                        <input type='text' name='nuevaDireccion'>
+                        <input type='text' name='nuevaDireccion' required>
                     </label>
                     <input type="hidden" value="1" name="bandera">
+                    <input type="hidden" value="$i" name="posicion">
                     <input type="submit" value="Modificar" name="btnEnviar">
                 </form>
                 <br>
