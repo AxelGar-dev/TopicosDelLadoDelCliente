@@ -1,6 +1,7 @@
 <?php
 $datosRetorno = "";
 $datos = "";
+$display = "display: block;";
 if(isset($_POST['delete'])) {
     if(strrpos($_POST['datosGuardados'], $_POST['nombreAEliminar']) === 0) {
         $nombreAEliminar = $_POST['nombreAEliminar'];
@@ -14,18 +15,11 @@ if(isset($_POST['delete'])) {
     }
 }
 if(isset($_POST['btnEnviar'])) {
-    if(isset($_POST['bandera8'])) {
-        $_POST['datosGuardados'] = $_POST['nuevoNombre'] . ",". $_POST['nuevaDireccion'] ."@" . $_POST['datosGuardados'];
-    }
-    if(isset($_POST['bandera9'])) {
-        $_POST['datosGuardados'] = $_POST['nombre'] . ",". $_POST['direccion'] ."@" . $_POST['datosGuardados'];
-    }
-    $cadenaAUsar = "";
-    if(substr($_POST['datosGuardados'], strlen($_POST['datosGuardados']) - 1) == "@") {
-        $cadenaAUsar = substr($_POST['datosGuardados'], 0, strlen($_POST['datosGuardados']) - 1);
-    }
-
     if($_POST['datosGuardados'] !== "") {
+        $cadenaAUsar = "";
+        if(substr($_POST['datosGuardados'], strlen($_POST['datosGuardados']) - 1) == "@") {
+            $cadenaAUsar = substr($_POST['datosGuardados'], 0, strlen($_POST['datosGuardados']) - 1);
+        }
         $datosRetorno =  $_POST['datosGuardados'];
         $registros = explode("@", $cadenaAUsar);
         for($i = 0; $i < count($registros); $i++) {
@@ -35,7 +29,7 @@ if(isset($_POST['btnEnviar'])) {
                     <td>$datosPersonales[0]</td>
                     <td>$datosPersonales[1]</td>
                     <td>
-                        <form action="U2_Practica8.php" method="POST">
+                        <form action="" method="POST">
                             <input type='hidden' value="$datosRetorno" name='datosGuardados'>
                             <input type='hidden' value="$datosPersonales[0]" name='nombreAModificar'>
                             <input type='hidden' value="$datosPersonales[1]" name='direccionAModificar'>
@@ -47,7 +41,6 @@ if(isset($_POST['btnEnviar'])) {
                             <input type='hidden' value="$datosRetorno" name='datosGuardados'>
                             <input type='hidden' value="$datosPersonales[0]" name='nombreAEliminar'>
                             <input type='hidden' value="$datosPersonales[1]" name='direccionAEliminar'>
-                            <input type='hidden' value="1" name='btnEnviar'>
                             <input type="submit" value="Eliminar" name="delete">
                         </form>
                     </td>
@@ -65,6 +58,27 @@ if(isset($_POST['btnEnviar'])) {
         }
     }
 }
+$modificarDatos = "";
+if(isset($_POST['modificar'])) {
+    $display = "display: none;";
+    $datosAGuardar = explode("@", $_POST['datosGuardados']);
+    for($i = 0; $i < count($datosAGuardar); $i++) {
+        if(explode(",", $datosAGuardar[$i])[0] == $_POST['nombreAModificar']) {
+            echo "<h2>Modificar datos</h2>"; echo "<br>";
+            echo explode(",", $datosAGuardar[$i])[0];
+            $modificarDatos .=  <<<HDOC
+                <form action="" method="POST">
+                    <input type='hidden' value='$datosRetorno' name='datosGuardados'>
+                    <input type='hidden' value="$datosPersonales[0]" name='nombreAEliminar'>
+                    <input type='hidden' value="$datosPersonales[1]" name='direccionAEliminar'>
+                    <input type='hidden' value="1" name='btnEnviar'>
+                    <input type="submit" value="Detalles" name="detalle">
+                </form>
+            HDOC;
+            break;
+        }
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -75,7 +89,7 @@ if(isset($_POST['btnEnviar'])) {
     <title>Práctica 7</title>
 </head>
 <body>
-    <table border="1">
+    <table border="1" style="<?php echo $display; ?>">
         <thead>
             <tr>
                 <th>Nombre</th>
@@ -87,7 +101,7 @@ if(isset($_POST['btnEnviar'])) {
             <?php echo $datos?>
         </tbody>
     </table>
-    <form action="U2_Practica6.php" method="POST">
+    <form action="U2_Practica6.php" method="POST" style="<?php echo $display; ?>">
         <input type="hidden" name="datosRetorno" value="<?php echo $datosRetorno; ?>">
         <input type="submit" value="Regresar" name="btnRegresar">
     </form>
