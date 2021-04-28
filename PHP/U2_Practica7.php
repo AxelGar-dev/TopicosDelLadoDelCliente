@@ -1,7 +1,7 @@
 <?php
 $datosRetorno = "";
 $datos = "";
-$display = "display: block;";
+$display = "";
 if(isset($_POST['delete'])) {
     if(strrpos($_POST['datosGuardados'], $_POST['nombreAEliminar']) === 0) {
         $nombreAEliminar = $_POST['nombreAEliminar'];
@@ -65,14 +65,27 @@ if(isset($_POST['modificar'])) {
     for($i = 0; $i < count($datosAGuardar); $i++) {
         if(explode(",", $datosAGuardar[$i])[0] == $_POST['nombreAModificar']) {
             echo "<h2>Modificar datos</h2>"; echo "<br>";
-            echo explode(",", $datosAGuardar[$i])[0];
+            // echo explode(",", $datosAGuardar[$i])[0];
             $modificarDatos .=  <<<HDOC
                 <form action="" method="POST">
                     <input type='hidden' value='$datosRetorno' name='datosGuardados'>
-                    <input type='hidden' value="$datosPersonales[0]" name='nombreAEliminar'>
-                    <input type='hidden' value="$datosPersonales[1]" name='direccionAEliminar'>
-                    <input type='hidden' value="1" name='btnEnviar'>
-                    <input type="submit" value="Detalles" name="detalle">
+                    <label>
+                        Nuevo nombre:
+                        <input type='text' name='nuevoNombre'>
+                    </label>
+                    <br>
+                    <label>
+                        Nueva dirección:
+                        <input type='text' name='nuevaDireccion'>
+                    </label>
+                    <input type="hidden" value="1" name="bandera">
+                    <input type="submit" value="Modificar" name="btnEnviar">
+                </form>
+                <br>
+                <form action="" method="POST">
+                    <input type='hidden' value='$datosRetorno' name='datosGuardados'>
+                    <input type="hidden" value="2" name="bandera">
+                    <input type="submit" value="Regresar" name="btnEnviar">
                 </form>
             HDOC;
             break;
@@ -105,5 +118,6 @@ if(isset($_POST['modificar'])) {
         <input type="hidden" name="datosRetorno" value="<?php echo $datosRetorno; ?>">
         <input type="submit" value="Regresar" name="btnRegresar">
     </form>
+    <?php echo $modificarDatos; ?>
 </body>
 </html>
