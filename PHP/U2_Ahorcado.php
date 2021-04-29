@@ -1,5 +1,5 @@
 <?php
-$palabras = array("Comida", "Carrera", "Gran persona", "Laberinto", "Cama");
+$palabras = array("Cascada", "Carrera", "Gran persona", "Laberinto", "Cama");
 $niveles = count($palabras);
 $letras = "";
 $style = "";
@@ -7,8 +7,8 @@ $imagen = "";
 $nivel = 0;
 $teclado = "";
 $teclasDesabilitadas = "";
-$posicionCampo;
 $valorCampo = "";
+$opcionCorrecta = 0;
 if(isset($_POST['start'])) {
     $style = "display: none;";
     $cadena = $palabras[$nivel];
@@ -25,8 +25,14 @@ if(isset($_POST['start'])) {
 if(isset($_POST['btnLetra'])) {
     $style = "display: none;";
     $teclasDesabilitadas = $_POST['teclas'];
-    crearTeclado($_POST['btnLetra']);
-    // comprobarCaracter($_POST['btnLetra'], $_POST['nivel']);
+    $valorCampo = $_POST['valor'];
+    $opcionCorrecta = $_POST['aciertos'];
+    if(comprobarCaracter($_POST['btnLetra'], $_POST['nivel'])) {
+        $opcionCorrecta++;
+        if($opcionCorrecta == strlen($palabras[$nivel])) {
+            
+        }
+    }
 }
 
 function crearTeclado($teclaPresionada) {
@@ -75,21 +81,61 @@ function crearTeclado($teclaPresionada) {
 }
 
 function comprobarCaracter($teclaPresionada, $nivelActual) {
+    global $valorCampo;
+    global $palabras;
+    global $letras;
+    global $opcionCorrecta;
     $cadena = $palabras[$nivelActual];
     $banderaTecla = 0;
-    for($i = 0; $i < strlen($cadena); $i++) {
-        if($cadena[$i] == " ") {
-            $letras .= "<p style='margin-left: 20px; margin-right: 20px;'></p>";
-        }
-        elseif($cadena[$i] == $teclaPresionada) {
-            $letras .= "<input type='text' value='$teclaPresionada' autocomplete='off' class='lyrics' id='$i' readonly style='margin-right: 5px;'>";
-            $banderaTecla = 1;
-        }
-        else {
-            $letras .= "<input type='text' autocomplete='off' class='lyrics' id='$i' readonly style='margin-right: 5px;'>";
+    if($valorCampo != "") {
+        $arrayCaracteres = explode("-", $valorCampo);
+        for($i = 0; $i < strlen($cadena); $i++) {
+            if($cadena[$i] == " ") {
+                $letras .= "<p style='margin-left: 20px; margin-right: 20px;'></p>";
+            }
+            elseif(strcasecmp($cadena[$i], $teclaPresionada) == 0) {
+                $letras .= "<input type='text' value='$teclaPresionada' autocomplete='off' class='lyrics' id='$i' readonly style='margin-right: 5px;'>";
+                $opcionCorrecta++;
+                if(!str_contains($valorCampo, $teclaPresionada)) {
+                    $valorCampo .= "-" .$teclaPresionada;
+                    $banderaTecla = 1;
+                }
+            }
+            else {
+                $flag = 0;
+                for($j = 0; $j < count($arrayCaracteres); $j++) {
+                    if(strcasecmp($arrayCaracteres[$j], $cadena[$i]) == 0) {
+                        $letras .= "<input type='text' value='$arrayCaracteres[$j]' autocomplete='off' class='lyrics' id='$i' readonly style='margin-right: 5px;'>";
+                        $flag = 1;
+                        break;
+                    }
+                }
+                if(!$flag) {
+                    $letras .= "<input type='text' autocomplete='off' class='lyrics' id='$i' readonly style='margin-right: 5px;'>";
+                }
+            }
         }
     }
-    $teclado = crearTeclado($teclaPresionada);
+    else {
+        for($i = 0; $i < strlen($cadena); $i++) {
+            if($cadena[$i] == " ") {
+                $letras .= "<p style='margin-left: 20px; margin-right: 20px;'></p>";
+            }
+            elseif(strcasecmp($cadena[$i], $teclaPresionada) == 0) {
+                $letras .= "<input type='text' value='$teclaPresionada' autocomplete='off' class='lyrics' id='$i' readonly style='margin-right: 5px;'>";
+                $opcionCorrecta++;
+                if(!str_contains($valorCampo, $teclaPresionada)) {
+                    $valorCampo .= $teclaPresionada;
+                    $banderaTecla = 1;
+                }
+            }
+            else {
+                $letras .= "<input type='text' autocomplete='off' class='lyrics' id='$i' readonly style='margin-right: 5px;'>";
+            }
+        }
+    }
+    crearTeclado($teclaPresionada);
+    return $banderaTecla;
 }
 ?>
 
@@ -200,9 +246,9 @@ function comprobarCaracter($teclaPresionada, $nivelActual) {
         <form action="" method="POST" name="miFormulario" class="teclado">
             <?php echo $teclado; ?>
             <input type="hidden" name="nivel" value="<?php echo $nivel?>">
-            <input type="hidden" name="posicion" value="<?php echo $posicionCampo; ?>">
             <input type="hidden" name="valor" value="<?php echo $valorCampo; ?>">
             <input type="hidden" name="teclas" value="<?php echo $teclasDesabilitadas; ?>">
+            <input type="hidden" name="aciertos" value="<?php echo $opcionCorrecta; ?>">
         </form>
     </div>
 </body>
