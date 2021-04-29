@@ -33,32 +33,39 @@ function crearTeclado($teclaPresionada) {
     global $teclado;
     global $teclasDesabilitadas;
     if($teclasDesabilitadas != "") {
-        $arrayTeclas = explode($teclasDesabilitadas, "-");
-        asort($arrayTeclas);
+        $arrayTeclas = explode("-", $teclasDesabilitadas);
+        sort($arrayTeclas);
         $j = 0;
-        for($i=65; $i<=90; $i++) {
+        for($i = 65; $i <= 90; $i++) {
             $letter = chr($i);
             if($j < count($arrayTeclas)) {
                 if($arrayTeclas[$j] == $letter) {
                     $teclado .= "<input type='submit' value='$letter' name='btnLetra' onchange='miFormulario.submit();' class='disabled' disabled>";
+                    $j++;
+                }
+                elseif($letter == $teclaPresionada) {
+                    $teclado .= "<input type='submit' value='$letter' name='btnLetra' onchange='miFormulario.submit();' class='disabled' disabled>";
+                    $teclasDesabilitadas .= "-". $letter;
+                }
+                else {
+                    $teclado .= "<input type='submit' value='$letter' name='btnLetra' onchange='miFormulario.submit();' class='enabled' enabled>";
                 }
             }
-            if($letter == $teclaPresionada) {
+            elseif($letter == $teclaPresionada) {
                 $teclado .= "<input type='submit' value='$letter' name='btnLetra' onchange='miFormulario.submit();' class='disabled' disabled>";
-                $teclasDesabilitadas .= $letter. "-";
+                $teclasDesabilitadas .= "-". $letter;
             }
             else {
                 $teclado .= "<input type='submit' value='$letter' name='btnLetra' onchange='miFormulario.submit();' class='enabled' enabled>";
             }
         }
-        $j++;
     }
     else {
         for($i=65; $i<=90; $i++) {
             $letter = chr($i);
             if($letter == $teclaPresionada) {
                 $teclado .= "<input type='submit' value='$letter' name='btnLetra' onchange='miFormulario.submit();' class='disabled' disabled>";
-                $teclasDesabilitadas .= $letter. "-";
+                $teclasDesabilitadas .= $letter;
             }
             else {
                 $teclado .= "<input type='submit' value='$letter' name='btnLetra' onchange='miFormulario.submit();' class='enabled' enabled>";
@@ -176,9 +183,9 @@ function comprobarCaracter($teclaPresionada, $nivelActual) {
 </head>
 <body>
     <div class="instructions">
-        <h1>Ahorcado</h1>
+        <!-- <h1>Ahorcado</h1>
         <p class="level">Nivel: </p>
-        <p class="track">Errores: </p>
+        <p class="track">Errores: </p> -->
         <form action="" method="POST" style="<?php echo $style; ?>">
             <input type="submit" id="start" name="start" value="Iniciar">
         </form>
@@ -193,8 +200,8 @@ function comprobarCaracter($teclaPresionada, $nivelActual) {
         <form action="" method="POST" name="miFormulario" class="teclado">
             <?php echo $teclado; ?>
             <input type="hidden" name="nivel" value="<?php echo $nivel?>">
-            <!-- <input type="hidden" name="posicion" value="<?php echo $posicionCampo; ?>">
-            <input type="hidden" name="valor" value="<?php echo $valorCampo; ?>"> -->
+            <input type="hidden" name="posicion" value="<?php echo $posicionCampo; ?>">
+            <input type="hidden" name="valor" value="<?php echo $valorCampo; ?>">
             <input type="hidden" name="teclas" value="<?php echo $teclasDesabilitadas; ?>">
         </form>
     </div>
