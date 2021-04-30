@@ -9,6 +9,7 @@ $teclado = "";
 $teclasDesabilitadas = "";
 $valorCampo = "";
 $opcionCorrecta = 0;
+$siguienteNivel = "";
 if(isset($_POST['start'])) {
     $style = "display: none;";
     $cadena = $palabras[$nivel];
@@ -22,15 +23,37 @@ if(isset($_POST['start'])) {
     }
     crearTeclado("");
 }
+
+if(isset($_POST['next'])) {
+    $siguienteNivel = "";
+    $nivel = $_POST['nivel'];
+    $style = "display: none;";
+    $cadena = $palabras[$nivel];
+    for($i = 0; $i < strlen($cadena); $i++) {
+        if($cadena[$i] == " ") {
+            $letras .= "<p style='margin-left: 20px; margin-right: 20px;'></p>";
+        }
+        else {
+            $letras .= "<input type='text' autocomplete='off' class='lyrics' id='$i' readonly style='margin-right: 5px;'>";
+        }
+    }
+    crearTeclado("");
+}
+
 if(isset($_POST['btnLetra'])) {
     $style = "display: none;";
     $teclasDesabilitadas = $_POST['teclas'];
     $valorCampo = $_POST['valor'];
     $opcionCorrecta = $_POST['aciertos'];
+    $nivel = $_POST['nivel'];
     if(comprobarCaracter($_POST['btnLetra'], $_POST['nivel'])) {
-        $opcionCorrecta++;
-        if($opcionCorrecta == strlen($palabras[$nivel])) {
-            
+        if($opcionCorrecta == strlen(str_replace(" ", "", $palabras[$nivel]))) {
+            $nivel++;
+            echo "Nivel: ". $nivel;
+            $siguienteNivel = "<input type='submit' value='Siguiente nivel' name='next' class='siguiente'>";
+        }
+        else {
+            echo "<br> Es el else";
         }
     }
 }
@@ -225,6 +248,23 @@ function comprobarCaracter($teclaPresionada, $nivelActual) {
             border: 1px solid #aaa;
             cursor: auto;
         }
+
+        .nextLevel {
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        .nextLevel form .siguiente {
+            width: 30%;
+            height: 40px;
+            font-size: 16px;
+            font-weight: bold;
+            border: 1px solid #2b2;
+            background-color: #2b2;
+            color: #fff;
+            cursor: pointer;
+            border-radius: 5px;
+        }
     </style>
 </head>
 <body>
@@ -249,6 +289,12 @@ function comprobarCaracter($teclaPresionada, $nivelActual) {
             <input type="hidden" name="valor" value="<?php echo $valorCampo; ?>">
             <input type="hidden" name="teclas" value="<?php echo $teclasDesabilitadas; ?>">
             <input type="hidden" name="aciertos" value="<?php echo $opcionCorrecta; ?>">
+        </form>
+    </div>
+    <div class="nextLevel">
+        <form action="" method="POST" name="siguienteNivel">
+            <input type="hidden" name="nivel" value="<?php echo $nivel?>">
+            <?php echo $siguienteNivel; ?>
         </form>
     </div>
 </body>
