@@ -70,8 +70,8 @@ if(isset($_POST['btnLetra'])) {
             }
             else {
                 $siguienteNivel = "<input type='submit' value='Siguiente nivel' name='next' class='siguiente'>";
-                $nivelesGanados = $_POST['ganado'];
-                $nivelesPerdidos = $_POST['perdido'];
+                $nivelesGanados++;
+                inhabilitarTeclado();
             }
         }
     }
@@ -108,8 +108,7 @@ if(isset($_POST['btnLetra'])) {
                 }
                 else {
                     $siguienteNivel = "<input type='submit' value='Siguiente nivel' name='next' class='siguiente'>";
-                    $nivelesGanados = $_POST['ganado'];
-                    $nivelesPerdidos = $_POST['perdido'];
+                    $nivelesPerdidos++;
                 }
                 break;
         }
