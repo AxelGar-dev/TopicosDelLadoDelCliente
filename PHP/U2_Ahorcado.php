@@ -11,6 +11,9 @@ $valorCampo = "";
 $opcionCorrecta = 0;
 $siguienteNivel = "";
 $errores = 0;
+$nivelesPerdidos = 0;
+$nivelesGanados = 0;
+$volverAJugar = "";
 if(isset($_POST['start'])) {
     $style = "display: none;";
     $cadena = $palabras[$nivel];
@@ -39,6 +42,8 @@ if(isset($_POST['next'])) {
         }
     }
     crearTeclado("");
+    $nivelesGanados = $_POST['ganado'];
+    $nivelesPerdidos = $_POST['perdido'];
 }
 
 if(isset($_POST['btnLetra'])) {
@@ -48,14 +53,25 @@ if(isset($_POST['btnLetra'])) {
     $opcionCorrecta = $_POST['aciertos'];
     $nivel = $_POST['nivel'];
     $errores = $_POST['errores'];
+    $imagen = $_POST['ahorcado'];
+    $nivelesGanados = $_POST['ganado'];
+    $nivelesPerdidos = $_POST['perdido'];
     if(comprobarCaracter($_POST['btnLetra'], $_POST['nivel'])) {
         if($opcionCorrecta == strlen(str_replace(" ", "", $palabras[$nivel]))) {
             $nivel++;
             if($nivel == count($palabras)) {
-                echo "Niveles finalizados";
+                $volverAJugar = <<<HDOC
+                        <form action='' method='POST' name='finDelJuego'>
+                            <p>Niveles ganados: $nivelesGanados</p>
+                            <p>Niveles perdidos: $nivelesPerdidos</p>
+                            <input type='submit' name='start' value='Volver a jugar' class='playAgain'>
+                        </form>
+                HDOC;
             }
             else {
                 $siguienteNivel = "<input type='submit' value='Siguiente nivel' name='next' class='siguiente'>";
+                $nivelesGanados = $_POST['ganado'];
+                $nivelesPerdidos = $_POST['perdido'];
             }
         }
     }
@@ -63,17 +79,38 @@ if(isset($_POST['btnLetra'])) {
         $errores++;
         switch($errores) {
             case 1:
-                $imagen = "";
+                $imagen = "../images/Ahorcado.png";
                 break;
             case 2:
+                $imagen = "../images/Ahorcado-1.png";
                 break;
             case 3:
+                $imagen = "../images/Ahorcado-2.png";
                 break;
             case 4:
+                $imagen = "../images/Ahorcado-3.png";
                 break;
             case 5:
+                $imagen = "../images/Ahorcado-4.png";
                 break;
             case 6:
+                $imagen = "../images/Ahorcado-5.png";
+                inhabilitarTeclado();
+                $nivel++;
+                if($nivel == count($palabras)) {
+                    $volverAJugar = <<<HDOC
+                        <form action='' method='POST' name='finDelJuego'>
+                            <p>Niveles ganados: $nivelesGanados</p>
+                            <p>Niveles perdidos: $nivelesPerdidos</p>
+                            <input type='submit' name='start' value='Volver a jugar' class='playAgain'>
+                        </form>
+                    HDOC;
+                }
+                else {
+                    $siguienteNivel = "<input type='submit' value='Siguiente nivel' name='next' class='siguiente'>";
+                    $nivelesGanados = $_POST['ganado'];
+                    $nivelesPerdidos = $_POST['perdido'];
+                }
                 break;
         }
     }
@@ -181,6 +218,15 @@ function comprobarCaracter($teclaPresionada, $nivelActual) {
     crearTeclado($teclaPresionada);
     return $banderaTecla;
 }
+
+function inhabilitarTeclado() {
+    global $teclado;
+    $teclado = "";
+    for($i=65; $i<=90; $i++) {
+        $letter = chr($i);
+        $teclado .= "<input type='submit' value='$letter' name='btnLetra' onchange='miFormulario.submit();' class='disabled' disabled>";
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -286,13 +332,33 @@ function comprobarCaracter($teclaPresionada, $nivelActual) {
             cursor: pointer;
             border-radius: 5px;
         }
+
+        .gameOver {
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        .gameOver p {
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .gameOver .playAgain {
+            width: 30%;
+            height: 40px;
+            font-size: 16px;
+            font-weight: bold;
+            border: 1px solid #2b2;
+            background-color: #2b2;
+            color: #fff;
+            cursor: pointer;
+            border-radius: 5px;
+        }
     </style>
 </head>
 <body>
     <div class="instructions">
-        <!-- <h1>Ahorcado</h1>
-        <p class="level">Nivel: </p>
-        <p class="track">Errores: </p> -->
+        <h1>Ahorcado</h1>
         <form action="" method="POST" style="<?php echo $style; ?>">
             <input type="submit" id="start" name="start" value="Iniciar">
         </form>
@@ -310,14 +376,22 @@ function comprobarCaracter($teclaPresionada, $nivelActual) {
             <input type="hidden" name="teclas" value="<?php echo $teclasDesabilitadas; ?>">
             <input type="hidden" name="aciertos" value="<?php echo $opcionCorrecta; ?>">
             <input type="hidden" name="errores" value="<?php echo $errores; ?>">
+            <input type="hidden" name="ahorcado" value="<?php echo $imagen; ?>">
+            <input type="hidden" name="perdido" value="<?php echo $nivelesPerdidos?>">
+            <input type="hidden" name="ganado" value="<?php echo $nivelesGanados?>">
             <?php echo $teclado; ?>
         </form>
     </div>
     <div class="nextLevel">
         <form action="" method="POST" name="siguienteNivel">
             <input type="hidden" name="nivel" value="<?php echo $nivel?>">
+            <input type="hidden" name="perdido" value="<?php echo $nivelesPerdidos?>">
+            <input type="hidden" name="ganado" value="<?php echo $nivelesGanados?>">
             <?php echo $siguienteNivel; ?>
         </form>
+    </div>
+    <div class="gameOver">
+        <?php echo $volverAJugar; ?>
     </div>
 </body>
 </html>
