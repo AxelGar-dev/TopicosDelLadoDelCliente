@@ -10,6 +10,7 @@ $teclasDesabilitadas = "";
 $valorCampo = "";
 $opcionCorrecta = 0;
 $siguienteNivel = "";
+$errores = 0;
 if(isset($_POST['start'])) {
     $style = "display: none;";
     $cadena = $palabras[$nivel];
@@ -46,14 +47,34 @@ if(isset($_POST['btnLetra'])) {
     $valorCampo = $_POST['valor'];
     $opcionCorrecta = $_POST['aciertos'];
     $nivel = $_POST['nivel'];
+    $errores = $_POST['errores'];
     if(comprobarCaracter($_POST['btnLetra'], $_POST['nivel'])) {
         if($opcionCorrecta == strlen(str_replace(" ", "", $palabras[$nivel]))) {
             $nivel++;
-            echo "Nivel: ". $nivel;
-            $siguienteNivel = "<input type='submit' value='Siguiente nivel' name='next' class='siguiente'>";
+            if($nivel == count($palabras)) {
+                echo "Niveles finalizados";
+            }
+            else {
+                $siguienteNivel = "<input type='submit' value='Siguiente nivel' name='next' class='siguiente'>";
+            }
         }
-        else {
-            echo "<br> Es el else";
+    }
+    else {
+        $errores++;
+        switch($errores) {
+            case 1:
+                $imagen = "";
+                break;
+            case 2:
+                break;
+            case 3:
+                break;
+            case 4:
+                break;
+            case 5:
+                break;
+            case 6:
+                break;
         }
     }
 }
@@ -284,11 +305,12 @@ function comprobarCaracter($teclaPresionada, $nivelActual) {
     </div>
     <div>
         <form action="" method="POST" name="miFormulario" class="teclado">
-            <?php echo $teclado; ?>
             <input type="hidden" name="nivel" value="<?php echo $nivel?>">
             <input type="hidden" name="valor" value="<?php echo $valorCampo; ?>">
             <input type="hidden" name="teclas" value="<?php echo $teclasDesabilitadas; ?>">
             <input type="hidden" name="aciertos" value="<?php echo $opcionCorrecta; ?>">
+            <input type="hidden" name="errores" value="<?php echo $errores; ?>">
+            <?php echo $teclado; ?>
         </form>
     </div>
     <div class="nextLevel">
